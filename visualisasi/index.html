@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GenreAxis | Tamara Rani Meilita Analytics</title>
+    
+    <!-- Library Eksternal -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-dark shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold d-flex align-items-center" href="#">
+                <img src="logo_apple.png" alt="Logo" width="30" height="30" class="me-2">
+                GenreAxis <span class="fw-light ms-1">Analytics</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- HEADER (BAGIAN YANG DIUBAH) -->
+    <div class="main-header text-center">
+        <div class="container">
+            <h1 class="header-title">GENREAXIS DASHBOARD</h1>
+            <p class="header-subtitle">Sistem Visualisasi Otomatis Tren Popularitas Genre Musik</p>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="container mb-5">
+        <div class="row g-4">
+            
+            <!-- PANEL KONTROL -->
+            <div class="col-lg-4">
+                <div class="card card-custom shadow-sm p-4">
+                    <h6 class="fw-bold text-primary mb-3 text-uppercase small" style="letter-spacing: 1px;">Konfigurasi GenreAxis</h6>
+                    
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold">1. UNGGAH DATASET (EXCEL/CSV)</label>
+                        <input type="file" id="uploadFile" class="form-control custom-input" accept=".csv, .xlsx, .xls">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold">2. VARIABEL ANALISIS</label>
+                        <input type="text" id="inputManual" class="form-control custom-input mb-2" placeholder="Ketik primaryGenreName...">
+                        <div id="colList">
+                            <span class="text-muted small italic">Daftar kolom akan muncul di sini...</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold">3. JENIS VISUALISASI</label>
+                        <select id="chartType" class="form-select custom-input">
+                            <option value="bar">Bar Chart (Batang)</option>
+                            <option value="pie">Pie Chart (Lingkaran)</option>
+                            <option value="doughnut">Doughnut Chart</option>
+                            <option value="line">Line Chart (Garis)</option>
+                        </select>
+                    </div>
+
+                    <button id="btnGenerate" class="btn btn-primary w-100 fw-bold py-3 shadow-sm" disabled>
+                        GENERATE VISUALISASI
+                    </button>
+                </div>
+            </div>
+
+            <!-- PANEL GRAFIK -->
+            <div class="col-lg-8">
+                <div class="card card-custom shadow-sm p-4 mb-4">
+                    <h5 class="fw-bold border-bottom pb-2 mb-4 text-primary" style="letter-spacing: 0.5px;">Sumbu Visualisasi</h5>
+                    <div class="chart-wrapper">
+                        <canvas id="myChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card card-custom shadow-sm p-4 bg-light-blue border-0">
+                    <h5 class="fw-bold border-bottom pb-2 mb-3" style="letter-spacing: 0.5px;">Interpretasi GenreAxis</h5>
+                    <div id="resultText">
+                        <p class="text-muted small italic mb-0">Analisis otomatis akan muncul berdasarkan sumbu data yang dipilih.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- FOOTER (NAMA DIGANTI KE TAMARA RANI MEILITA) -->
+    <footer class="py-4 mt-5 text-center text-muted border-top bg-white">
+        <div class="container">
+            <p class="small mb-0">&copy; 2026 <strong>Tamara Rani Meilita</strong> - GenreAxis Project. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

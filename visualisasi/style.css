@@ -1,0 +1,101 @@
+/* Import Font Montserrat untuk Judul dan Poppins untuk Body */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@800&family=Poppins:wght@400;600;700&display=swap');
+
+body {
+    background-color: #f4f7ff;
+    font-family: 'Poppins', sans-serif;
+    color: #334155;
+}
+
+.navbar {
+    background-color: #1e3a8a;
+}
+
+.main-header {
+    background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+    color: white;
+    padding: 70px 0;
+    border-bottom-left-radius: 50px;
+    border-bottom-right-radius: 50px;
+    margin-bottom: 40px;
+    box-shadow: 0 10px 30px rgba(30, 58, 138, 0.2);
+}
+
+/* GAYA HEADER BARU AGAR LEBIH MENARIK */
+.header-title {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    font-size: 3.5rem;
+    letter-spacing: 3px;
+    margin-bottom: 5px;
+    text-shadow: 2px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.header-subtitle {
+    font-size: 1.1rem;
+    font-weight: 400;
+    opacity: 0.9;
+    letter-spacing: 1px;
+}
+
+.card-custom {
+    background: white;
+    border: none;
+    border-radius: 20px;
+    margin-bottom: 25px;
+}
+
+.custom-input {
+    border-radius: 12px;
+    border: 2px solid #e2e8f0;
+    font-size: 14px;
+    padding: 10px;
+}
+
+.btn-primary {
+    background-color: #3b82f6;
+    border: none;
+    border-radius: 12px;
+    transition: 0.3s;
+}
+
+.btn-primary:hover {
+    background-color: #2563eb;
+    transform: translateY(-2px);
+}
+
+.badge-col {
+    display: inline-block;
+    background-color: #f1f5f9;
+    color: #475569;
+    padding: 6px 12px;
+    border-radius: 8px;
+    margin: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid #e2e8f0;
+}
+
+.badge-col:hover {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.chart-wrapper {
+    position: relative;
+    height: 550px;
+    width: 100%;
+}
+
+.bg-light-blue {
+    background-color: #f8fafc;
+    border-left: 5px solid #3b82f6;
+}
+
+/* Responsive Font */
+@media (max-width: 768px) {
+    .header-title {
+        font-size: 2rem;
+    }
+}
