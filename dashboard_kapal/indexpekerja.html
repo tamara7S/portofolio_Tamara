@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PT PAL — SECURE GATEWAY</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;600;900&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --pink: #ff2d95;
+  --pink2: #ff6eb8;
+  --cyan: #00e5ff;
+  --green: #00ff9d;
+  --bg: #020008;
+  --glow-pink: 0 0 20px rgba(255,45,149,0.5), 0 0 60px rgba(255,45,149,0.2);
+  --glow-cyan: 0 0 20px rgba(0,229,255,0.4);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--pink);font-family:'Share Tech Mono',monospace;height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+
+/* ── CANVAS BG ── */
+canvas#bg{position:fixed;inset:0;z-index:0;opacity:0.5}
+
+/* ── CORNER DECOR ── */
+.corner{position:fixed;font-size:9px;opacity:0.45;letter-spacing:1px;line-height:1.8;font-family:'Share Tech Mono',monospace}
+.corner.tl{top:18px;left:18px}
+.corner.tr{top:18px;right:18px;text-align:right}
+.corner.bl{bottom:18px;left:18px}
+.corner.br{bottom:18px;right:18px;text-align:right}
+.corner span{color:var(--cyan)}
+
+/* ── SCANLINE ── */
+.scan{position:fixed;width:100%;height:3px;background:linear-gradient(transparent,rgba(0,229,255,0.15),transparent);animation:scanY 6s linear infinite;pointer-events:none;z-index:2}
+@keyframes scanY{from{top:-3px}to{top:100vh}}
+
+/* ── CARD ── */
+.card{
+  position:relative;z-index:10;width:420px;
+  background:rgba(5,0,15,0.92);
+  border:1px solid rgba(255,45,149,0.5);
+  padding:0;
+  animation:fadeUp .8s ease both;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* corner brackets */
+.card::before,.card::after{content:'';position:absolute;width:18px;height:18px}
+.card::before{top:-2px;left:-2px;border-top:2px solid var(--cyan);border-left:2px solid var(--cyan)}
+.card::after{bottom:-2px;right:-2px;border-bottom:2px solid var(--cyan);border-right:2px solid var(--cyan)}
+.card-tr,.card-bl{position:absolute;width:18px;height:18px}
+.card-tr{top:-2px;right:-2px;border-top:2px solid var(--cyan);border-right:2px solid var(--cyan)}
+.card-bl{bottom:-2px;left:-2px;border-bottom:2px solid var(--cyan);border-left:2px solid var(--cyan)}
+
+/* header */
+.card-head{padding:28px 32px 20px;border-bottom:1px solid rgba(255,45,149,0.2);text-align:center;position:relative}
+.card-head .logo{font-family:'Orbitron',sans-serif;font-weight:900;font-size:22px;letter-spacing:6px;color:#fff;text-shadow:var(--glow-pink)}
+.card-head .sub{font-size:9px;letter-spacing:4px;color:rgba(255,45,149,0.6);margin-top:6px}
+.status-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);margin-right:6px;animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* body */
+.card-body{padding:28px 32px}
+
+/* stages */
+#stage-form,#stage-bio,#stage-success{transition:opacity .35s}
+
+/* input */
+.field{margin-bottom:18px}
+.field label{display:block;font-size:9px;letter-spacing:2px;color:rgba(255,45,149,0.7);margin-bottom:8px;text-transform:uppercase}
+.field input{
+  width:100%;background:rgba(255,45,149,0.04);border:none;border-bottom:1px solid rgba(255,45,149,0.35);
+  padding:11px 14px;color:#fff;font-family:'Share Tech Mono',monospace;font-size:13px;outline:none;transition:.3s;
+  letter-spacing:1px;
+}
+.field input:focus{background:rgba(255,45,149,0.08);border-bottom-color:var(--cyan);box-shadow:0 2px 0 0 rgba(0,229,255,0.25)}
+.field input::placeholder{color:rgba(255,255,255,0.18)}
+
+/* selector */
+.role-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+.role-btn{
+  padding:10px;border:1px solid rgba(255,45,149,0.25);background:transparent;color:rgba(255,255,255,0.4);
+  font-family:'Share Tech Mono',monospace;font-size:10px;cursor:pointer;transition:.25s;letter-spacing:1px;text-transform:uppercase
+}
+.role-btn:hover{border-color:var(--pink);color:var(--pink)}
+.role-btn.active{border-color:var(--cyan);color:var(--cyan);background:rgba(0,229,255,0.05);box-shadow:0 0 12px rgba(0,229,255,0.1)}
+
+/* btn */
+.btn-main{
+  width:100%;padding:14px;background:linear-gradient(135deg,rgba(255,45,149,0.9),rgba(255,45,149,0.7));
+  border:none;color:#000;font-family:'Orbitron',sans-serif;font-weight:600;font-size:11px;letter-spacing:3px;
+  cursor:pointer;transition:.3s;text-transform:uppercase;position:relative;overflow:hidden
+}
+.btn-main::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 40%,rgba(255,255,255,0.15));pointer-events:none}
+.btn-main:hover{background:linear-gradient(135deg,#fff,#ffc6e0);box-shadow:0 0 30px rgba(255,45,149,0.6);transform:translateY(-1px)}
+.btn-main:active{transform:translateY(0)}
+
+/* logs */
+.logs{margin-top:20px;height:52px;font-size:9px;overflow:hidden;border-top:1px solid rgba(255,45,149,0.12);padding-top:10px;color:#444;letter-spacing:.5px}
+
+/* ── BIO STAGE ── */
+#stage-bio{display:none;text-align:center}
+.bio-title{font-size:9px;letter-spacing:3px;color:var(--cyan);margin-bottom:24px}
+.fp-wrap{position:relative;display:inline-flex;align-items:center;justify-content:center;width:120px;height:120px}
+.fp-ring{position:absolute;inset:0;border-radius:50%;border:1px solid rgba(255,45,149,0.3);animation:ringPulse 2s ease-in-out infinite}
+.fp-ring2{position:absolute;inset:-10px;border-radius:50%;border:1px solid rgba(0,229,255,0.15);animation:ringPulse 2s ease-in-out infinite .5s}
+@keyframes ringPulse{0%,100%{transform:scale(1);opacity:.6}50%{transform:scale(1.08);opacity:.2}}
+.fp-svg{width:64px;cursor:pointer;fill:var(--pink);filter:drop-shadow(0 0 8px rgba(255,45,149,0.6));transition:.3s}
+.fp-svg:hover{filter:drop-shadow(0 0 18px rgba(255,45,149,1)) drop-shadow(0 0 4px var(--cyan));transform:scale(1.05)}
+.fp-svg.scanning{animation:fpScan .4s ease-in-out infinite alternate}
+@keyframes fpScan{from{fill:var(--pink)}to{fill:var(--cyan)}}
+.bio-hint{font-size:9px;color:#555;margin-top:16px;letter-spacing:1px}
+.bio-status{font-size:10px;margin-top:8px;min-height:16px;letter-spacing:1px}
+.btn-back{background:none;border:none;color:rgba(255,45,149,0.4);font-family:'Share Tech Mono',monospace;font-size:9px;cursor:pointer;margin-top:16px;letter-spacing:1px}
+.btn-back:hover{color:var(--pink)}
+
+/* ── SUCCESS ── */
+#stage-success{display:none;text-align:center;padding:20px 0}
+.success-icon{font-size:40px;animation:popIn .5s cubic-bezier(.175,.885,.32,1.275) both}
+@keyframes popIn{from{transform:scale(0)}to{transform:scale(1)}}
+.success-msg{font-family:'Orbitron',sans-serif;font-size:12px;letter-spacing:3px;color:var(--green);margin-top:14px}
+.success-sub{font-size:9px;color:#555;margin-top:8px;letter-spacing:1px}
+.progress-bar{height:2px;background:rgba(255,45,149,0.15);margin-top:20px;border-radius:1px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--pink),var(--cyan));width:0;animation:fillBar 1.2s ease forwards}
+@keyframes fillBar{to{width:100%}}
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+<div class="scan"></div>
+
+<div class="corner tl">SYSTEM: <span>PAL_GATEWAY_v4.0</span><br>STATUS: <span>ENCRYPTED</span><br>NODE: <span>SUB_01</span></div>
+<div class="corner tr">IP: <span>192.168.1.44</span><br>LOC: <span>SURABAYA_HQ</span><br>RSA: <span>4096_ACTIVE</span></div>
+<div class="corner bl">TLS: <span>1.3</span> / AES: <span>256_GCM</span><br>CERT: <span>VALID</span></div>
+<div class="corner br">FIREWALL: <span>ACTIVE</span><br>IDS: <span>MONITORING</span></div>
+
+<div class="card">
+  <div class="card-tr"></div><div class="card-bl"></div>
+  <div class="card-head">
+    <div class="logo">⚓ PAL GATEWAY</div>
+    <div class="sub"><span class="status-dot"></span>SECURE_ACCESS_TERMINAL — PT PAL INDONESIA</div>
+  </div>
+  <div class="card-body">
+
+    <!-- STAGE 1: FORM -->
+    <div id="stage-form">
+      <div class="role-row">
+        <button class="role-btn" id="btn-worker" onclick="setRole('worker')">👷 PEKERJA</button>
+        <button class="role-btn active" id="btn-admin" onclick="setRole('admin')">🛡️ ADMIN</button>
+      </div>
+      <div class="field">
+        <label>[ USER_IDENTIFIER ]</label>
+        <input type="text" id="uid" placeholder="masukkan identitas..." autocomplete="off"/>
+      </div>
+      <div class="field">
+        <label>[ ACCESS_KEY ]</label>
+        <input type="password" id="pwd" placeholder="••••••••" onkeydown="if(event.key==='Enter')doAuth()"/>
+      </div>
+      <button class="btn-main" onclick="doAuth()">INITIATE_AUTH ›</button>
+    </div>
+
+    <!-- STAGE 2: BIO -->
+    <div id="stage-bio">
+      <div class="bio-title">BIOMETRIC VERIFICATION REQUIRED</div>
+      <div class="fp-wrap">
+        <div class="fp-ring"></div>
+        <div class="fp-ring2"></div>
+        <svg class="fp-svg" id="fp-icon" viewBox="0 0 100 100" onclick="scanBio(event)">
+          <ellipse cx="50" cy="50" rx="38" ry="44" fill="none" stroke="currentColor" stroke-width="3.5"/>
+          <path d="M30 38 Q50 20 70 38" fill="none" stroke="currentColor" stroke-width="2.5"/>
+          <path d="M25 48 Q50 28 75 48" fill="none" stroke="currentColor" stroke-width="2.2"/>
+          <path d="M24 56 Q50 36 76 56" fill="none" stroke="currentColor" stroke-width="2"/>
+          <path d="M26 64 Q50 46 74 64" fill="none" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M30 72 Q50 56 70 72" fill="none" stroke="currentColor" stroke-width="1.6"/>
+          <circle cx="50" cy="50" r="5" fill="currentColor" opacity=".4"/>
+        </svg>
+      </div>
+      <div class="bio-hint">TAHAN [SHIFT] + KLIK UNTUK SCAN SIDIK JARI</div>
+      <div class="bio-status" id="bio-status"></div>
+      <br/>
+      <button class="btn-back" onclick="backToForm()">← KEMBALI</button>
+    </div>
+
+    <!-- STAGE 3: SUCCESS -->
+    <div id="stage-success">
+      <div class="success-icon" id="success-icon">✅</div>
+      <div class="success-msg" id="success-msg">ACCESS_GRANTED</div>
+      <div class="success-sub" id="success-sub">Mengalihkan ke dashboard...</div>
+      <div class="progress-bar"><div class="progress-fill"></div></div>
+    </div>
+
+    <div class="logs" id="log-box">> AWAITING_CONNECTION...<br>> SYSTEM_READY</div>
+  </div>
+</div>
+
+<script>
+// ── PARTICLE BG ──
+const canvas = document.getElementById('bg');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+const pts = Array.from({length:80},()=>({x:Math.random()*canvas.width,y:Math.random()*canvas.height,vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4,r:Math.random()*1.5+.5}));
+function drawBg(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  pts.forEach(p=>{
+    p.x+=p.vx; p.y+=p.vy;
+    if(p.x<0||p.x>canvas.width)p.vx*=-1;
+    if(p.y<0||p.y>canvas.height)p.vy*=-1;
+    ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fillStyle='rgba(255,45,149,0.5)'; ctx.fill();
+  });
+  pts.forEach((a,i)=>pts.slice(i+1).forEach(b=>{
+    const d=Math.hypot(a.x-b.x,a.y-b.y);
+    if(d<130){ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.strokeStyle=`rgba(255,45,149,${.12*(1-d/130)})`;ctx.lineWidth=.5;ctx.stroke()}
+  }));
+  requestAnimationFrame(drawBg);
+}
+drawBg();
+
+// ── LOGIC ──
+let selectedRole = 'admin';
+
+function setRole(r){
+  selectedRole = r;
+  document.getElementById('btn-admin').classList.toggle('active', r==='admin');
+  document.getElementById('btn-worker').classList.toggle('active', r==='worker');
+}
+
+function log(msg, color='#555'){
+  const b = document.getElementById('log-box');
+  b.innerHTML = `<span style="color:${color}">› ${msg}</span><br>` + b.innerHTML;
+}
+
+function doAuth(){
+  const user = document.getElementById('uid').value.trim();
+  const pass = document.getElementById('pwd').value;
+  if(!user||!pass){log('ERROR: FIELD_KOSONG','#ff4444');return}
+
+  if(selectedRole==='admin'){
+    if(user==='admin_pal' && pass==='paljayajayayareu'){
+      log('Admin ID valid. Memuat sensor biometrik...','#ff2d95');
+      localStorage.setItem('pal_name',user);
+      localStorage.setItem('pal_role','admin');
+      document.getElementById('stage-form').style.display='none';
+      document.getElementById('stage-bio').style.display='block';
+    } else {
+      log('AUTH_FAILURE: KREDENSIAL_TIDAK_VALID','#ff4444');
+      shakeCard();
+    }
+  } else {
+    if(pass==='12345'){
+      log('Worker access valid. Redirecting...','#00ff9d');
+      localStorage.setItem('pal_name',user);
+      localStorage.setItem('pal_role','worker');
+      showSuccess('worker', user);
+    } else {
+      log('AUTH_FAILURE: AKSES_DITOLAK','#ff4444');
+      shakeCard();
+    }
+  }
+}
+
+// Fingerprint hanya Tamara
+const BIO_HASH = btoa('TAMARA_RANI_DEVICE_2025');
+
+function scanBio(e){
+  const fp = document.getElementById('fp-icon');
+  const st = document.getElementById('bio-status');
+
+  if(!e.shiftKey){
+    st.style.color='#ff4444';
+    st.textContent='SPOOFING_DETECTED — GUNAKAN SENSOR YANG BENAR';
+    log('THREAT_DETECTED: UNAUTHORIZED_FINGERPRINT','#ff4444');
+    fp.style.fill='#ff4444';
+    setTimeout(()=>{st.textContent='';fp.style.fill=''},2000);
+    return;
+  }
+
+  // Simulasi scan
+  fp.classList.add('scanning');
+  st.style.color='#ff2d95';
+  st.textContent='SCANNING...';
+  log('Biometric sensor aktif...','#ff2d95');
+
+  const steps = ['Analyzing ridge pattern...','Comparing minutiae points...','Cross-checking with vault...','Match found — TAMARA_RANI'];
+  let i=0;
+  const iv = setInterval(()=>{
+    st.textContent = steps[i]||'';
+    log(steps[i],'#888');
+    i++;
+    if(i>=steps.length){
+      clearInterval(iv);
+      fp.classList.remove('scanning');
+      st.style.color='#00ff9d';
+      st.textContent='MATCH_100% — IDENTITY_CONFIRMED';
+      log('Biometric confirmed. Token issued.','#00ff9d');
+      showSuccess('admin','admin_pal');
+    }
+  },520);
+}
+
+function showSuccess(role, user){
+  ['stage-form','stage-bio'].forEach(id=>{
+    document.getElementById(id).style.display='none';
+  });
+  const ss = document.getElementById('stage-success');
+  ss.style.display='block';
+  document.getElementById('success-icon').textContent = role==='admin'?'🛡️':'✅';
+  document.getElementById('success-msg').textContent = role==='admin'?'ADMIN_ACCESS_GRANTED':'OPERATOR_ACCESS_GRANTED';
+  document.getElementById('success-sub').textContent = `Welcome, ${user.toUpperCase()} — Redirecting...`;
+  log('Session token generated. Redirecting...','#00ff9d');
+  setTimeout(()=>{ window.location.href = role==='admin'?'.html':'dashboard_worker.html'; }, 1800);
+}
+
+function backToForm(){
+  document.getElementById('stage-bio').style.display='none';
+  document.getElementById('stage-form').style.display='block';
+}
+
+function shakeCard(){
+  const c = document.querySelector('.card');
+  c.style.animation='shake .4s ease';
+  setTimeout(()=>c.style.animation='',400);
+}
+
+// inject shake keyframe
+const ks = document.createElement('style');
+ks.textContent='@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}';
+document.head.appendChild(ks);
+
+setRole('admin');
+</script>
+</body>
+</html>
